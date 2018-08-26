@@ -1,15 +1,31 @@
 package com.example.bhati.bakers;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements RecipeAdapter.HandleClick {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private RecyclerView mRecyclerView;
+    private RecipeAdapter mAdapter;
+    private List<Recipe> mRecipes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,14 +34,38 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        mRecyclerView = findViewById(R.id.rv_main);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        mAdapter = new RecipeAdapter(this,mRecipes,this);
+       //mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+
+        deserialize();
+
+    }
+
+    private void deserialize() {
+        Type recipeListType = new TypeToken<List<Recipe>>() {
+        }.getType();
+        mRecipes = new Gson().fromJson(loadJSONFromAsset(), recipeListType);
+        mAdapter.setRecipes(mRecipes);
+    }
+
+    public String loadJSONFromAsset() {
+        StringBuilder responseStrBuilder;
+        try {
+            InputStream is = getAssets().open("recipes.json");
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            responseStrBuilder = new StringBuilder();
+            String inputStr;
+            while ((inputStr = streamReader.readLine()) != null)
+                responseStrBuilder.append(inputStr);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return responseStrBuilder.toString();
     }
 
     @Override
@@ -48,5 +88,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(Recipe recipe) {
+       // Snackbar.make(mRecyclerView,recipe.getName(),Snackbar.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this,RecipeActivity.class);
+        intent.putExtra(RecipeActivity.EXTRA_RECIPE,recipe);
+        startActivity(intent);
     }
 }
