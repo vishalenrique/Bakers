@@ -17,7 +17,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder
 
 
     public interface HandleClick{
-        void onClick(Step step);
+        void onClick(int position);
     }
 
     public StepAdapter(Context context, List<Step> steps, HandleClick handleClick) {
@@ -34,14 +34,14 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull StepViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull StepViewHolder holder, final int position) {
         final Step step = mSteps.get(position);
         holder.mStepDescription.setText(step.getShortDescription());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mHandleClick.onClick(step);
+                mHandleClick.onClick(position);
             }
         });
     }

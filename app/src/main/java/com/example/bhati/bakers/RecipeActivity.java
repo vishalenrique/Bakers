@@ -1,14 +1,14 @@
 package com.example.bhati.bakers;
 
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+
+import java.util.List;
 
 public class RecipeActivity extends AppCompatActivity implements StepAdapter.HandleClick{
 
@@ -16,6 +16,10 @@ public class RecipeActivity extends AppCompatActivity implements StepAdapter.Han
     private Recipe mRecipe;
     private RecyclerView mRecyclerView;
     private StepAdapter mAdapter;
+    private RecyclerView mIngredientsRecyclerView;
+    private IngredientAdapter mIngredientAdapter;
+    private List<Step> mSteps;
+    private List<Ingredient> mIngredients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,11 +29,25 @@ public class RecipeActivity extends AppCompatActivity implements StepAdapter.Han
         setSupportActionBar(toolbar);
 
         temp(toolbar);
+
+        mSteps = mRecipe.getSteps();
+        mIngredients = mRecipe.getIngredients();
+
+
         mRecyclerView = findViewById(R.id.rv_recipe);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
-        mAdapter = new StepAdapter(this,mRecipe.getSteps(),this);
+        mAdapter = new StepAdapter(this,mSteps,this);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,layoutManager.getOrientation());
+        mRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        mIngredientsRecyclerView = findViewById(R.id.rv_recipe_ingredients);
+        LinearLayoutManager layoutManager1 = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+        mIngredientAdapter = new IngredientAdapter(this, mIngredients);
+        mIngredientsRecyclerView.setLayoutManager(layoutManager1);
+        mIngredientsRecyclerView.setAdapter(mIngredientAdapter);
     }
 
     private void temp(Toolbar toolbar) {
@@ -40,7 +58,7 @@ public class RecipeActivity extends AppCompatActivity implements StepAdapter.Han
     }
 
     @Override
-    public void onClick(Step step) {
-        Snackbar.make(mRecyclerView,step.getShortDescription(),Snackbar.LENGTH_SHORT).show();
+    public void onClick(int position) {
+        Snackbar.make(mRecyclerView, mSteps.get(position).getShortDescription(),Snackbar.LENGTH_SHORT).show();
     }
 }

@@ -12,10 +12,5 @@
         tools:text="assaasvasvasv"
         android:padding="16dp"
         />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorPrimary"
-        android:layout_below="@id/tv_recipe_title"/>
 
 </RelativeLayout>
