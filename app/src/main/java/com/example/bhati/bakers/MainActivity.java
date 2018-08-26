@@ -1,13 +1,16 @@
 package com.example.bhati.bakers;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -35,15 +38,25 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Han
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        Configuration configuration = getResources().getConfiguration();
+        int smallestScreenWidthDp = configuration.smallestScreenWidthDp;
+
+
         mRecyclerView = findViewById(R.id.rv_main);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         mAdapter = new RecipeAdapter(this,mRecipes,this);
-       //mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,layoutManager.getOrientation());
-        mRecyclerView.addItemDecoration(dividerItemDecoration);
+        if(smallestScreenWidthDp > 600){
+            GridLayoutManager mLayoutManager = new GridLayoutManager(this,3);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,mLayoutManager.getOrientation());
+            mRecyclerView.addItemDecoration(dividerItemDecoration);
+        }else{
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,mLayoutManager.getOrientation());
+            mRecyclerView.addItemDecoration(dividerItemDecoration);
+        }
 
         deserialize();
 
