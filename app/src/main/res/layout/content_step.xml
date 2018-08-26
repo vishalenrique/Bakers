@@ -9,14 +9,13 @@
     tools:showIn="@layout/activity_step">
 
 
-    <FrameLayout
-        android:id="@+id/frame_layout"
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/exo_player_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/left_arrow"
-        android:layout_alignParentTop="true"
-       >
-    </FrameLayout>
+        android:layout_alignParentTop="true" />
+
     <ImageView
         android:id="@+id/left_arrow"
         android:layout_width="wrap_content"
@@ -28,11 +27,10 @@
         android:id="@+id/tv_step_heading"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_below="@id/frame_layout"
-        android:layout_toStartOf="@id/right_arrow"
+        android:layout_below="@id/exo_player_view"
         android:layout_toEndOf="@id/left_arrow"
-        android:gravity="center"
-        />
+        android:layout_toStartOf="@id/right_arrow"
+        android:gravity="center" />
 
     <ImageView
         android:id="@+id/right_arrow"
@@ -48,7 +46,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_step_heading"
         android:layout_margin="16dp"
-        android:gravity="center"
-        />
+        android:gravity="center" />
 
 </RelativeLayout>
