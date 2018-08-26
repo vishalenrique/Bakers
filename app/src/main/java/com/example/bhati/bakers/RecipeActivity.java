@@ -1,7 +1,7 @@
 package com.example.bhati.bakers;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,7 +28,7 @@ public class RecipeActivity extends AppCompatActivity implements StepAdapter.Han
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        temp(toolbar);
+        setup();
 
         mSteps = mRecipe.getSteps();
         mIngredients = mRecipe.getIngredients();
@@ -50,15 +50,16 @@ public class RecipeActivity extends AppCompatActivity implements StepAdapter.Han
         mIngredientsRecyclerView.setAdapter(mIngredientAdapter);
     }
 
-    private void temp(Toolbar toolbar) {
+    private void setup() {
         mRecipe = getIntent().getParcelableExtra(EXTRA_RECIPE);
         String recipeName = mRecipe.getName();
-
         getSupportActionBar().setTitle(recipeName);
     }
 
     @Override
     public void onClick(int position) {
-        Snackbar.make(mRecyclerView, mSteps.get(position).getShortDescription(),Snackbar.LENGTH_SHORT).show();
+        Intent intent = new Intent(RecipeActivity.this,StepActivity.class);
+        intent.putExtra(StepActivity.EXTRA_RECIPE,mRecipe);
+        startActivity(intent);
     }
 }

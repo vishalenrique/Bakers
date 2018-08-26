@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Han
 
     @Override
     public void onClick(Recipe recipe) {
-       // Snackbar.make(mRecyclerView,recipe.getName(),Snackbar.LENGTH_SHORT).show();
         Intent intent = new Intent(MainActivity.this,RecipeActivity.class);
         intent.putExtra(RecipeActivity.EXTRA_RECIPE,recipe);
         startActivity(intent);
