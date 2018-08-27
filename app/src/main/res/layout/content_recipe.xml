@@ -1,55 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl_recipe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".RecipeActivity"
     android:orientation="vertical"
-    tools:showIn="@layout/activity_recipe">
+    tools:showIn="@layout/activity_recipe"
+    android:name="com.example.bhati.bakers.RecipeFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ingredients"
-        android:paddingTop="16dp"
-        android:layout_gravity="center"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:id="@+id/rv_recipe_ingredients"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorPrimary"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Steps"
-        android:padding="8dp"
-        android:layout_gravity="center"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorPrimary"
-       />
-
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_weight="2"
-        android:id="@+id/rv_recipe"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        tools:listitem="@layout/list_item" />
-
-</LinearLayout>
+</fragment>

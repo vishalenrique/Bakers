@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Han
     @Override
     public void onClick(Recipe recipe) {
         Intent intent = new Intent(MainActivity.this,RecipeActivity.class);
-        intent.putExtra(RecipeActivity.EXTRA_RECIPE,recipe);
+        intent.putExtra(RecipeFragment.EXTRA_RECIPE,recipe);
         startActivity(intent);
     }
 }
