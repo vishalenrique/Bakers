@@ -1,9 +1,11 @@
 package com.example.bhati.bakers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -30,6 +32,7 @@ import java.util.List;
 public class StepFragment extends Fragment {
 
     public static final String EXTRA_RECIPE = "recipeFromRecipeActivity";
+    public static final String EXTRA_POSITION = "extraPosition";
     private Recipe mRecipe;
     private List<Step> mSteps;
     private TextView mStepHeading;
@@ -53,8 +56,13 @@ public class StepFragment extends Fragment {
     }
 
 
-    public static StepFragment newInstance() {
-        return new StepFragment();
+    public static StepFragment newInstance(Recipe recipe, int position) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(EXTRA_RECIPE, recipe);
+        bundle.putInt(EXTRA_POSITION, position);
+        StepFragment stepFragment = new StepFragment();
+        stepFragment.setArguments(bundle);
+        return stepFragment;
     }
 
 
@@ -64,16 +72,29 @@ public class StepFragment extends Fragment {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_step, container, false);
 
-        mRecipe = getActivity().getIntent().getParcelableExtra(EXTRA_RECIPE);
+        if(savedInstanceState!=null){
+//            mRecipe = savedInstanceState.getParcelable(EXTRA_RECIPE);
+//            mPosition = savedInstanceState.getInt(EXTRA_POSITION,0);
+        }else {
 
-        if (mRecipe != null) {
-            initialSetup(null,mPosition);
+            Intent intent = getActivity().getIntent();
+            mRecipe = intent.getParcelableExtra(EXTRA_RECIPE);
+            mPosition = intent.getIntExtra(EXTRA_POSITION, 0);
+            if (mRecipe == null) {
+                Bundle arguments = getArguments();
+                mRecipe = arguments.getParcelable(EXTRA_RECIPE);
+                mPosition = arguments.getInt(EXTRA_POSITION);
+            }
+
+            if (mRecipe != null) {
+                initialSetup(null, mPosition);
+            }
         }
 
         return mRootView;
     }
 
-    public void initialSetup(Recipe recipe,int position) {
+    public void initialSetup(Recipe recipe, int position) {
         if (mRecipe == null) {
             mRecipe = recipe;
             mPosition = position;
