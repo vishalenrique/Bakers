@@ -4,4 +4,6 @@
     <string name="title_activity_recipe">RecipeActivity</string>
     <string name="ingredient_identifier">%1$d of %2$d</string>
     <string name="title_activity_step">StepActivity</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>
