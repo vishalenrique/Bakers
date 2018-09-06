@@ -6,4 +6,6 @@
     <string name="title_activity_step">StepActivity</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="last_item">Last item reached</string>
+    <string name="first_item">First item reached</string>
 </resources>
