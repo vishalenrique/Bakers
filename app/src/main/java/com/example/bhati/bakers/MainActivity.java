@@ -3,6 +3,11 @@ package com.example.bhati.bakers;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+
+import android.support.test.espresso.IdlingResource;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -23,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.List;
+import com.example.bhati.bakers.SimpleIdlingResource;
 
 public class MainActivity extends AppCompatActivity implements RecipeAdapter.HandleClick {
 
@@ -30,6 +36,9 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Han
     private RecyclerView mRecyclerView;
     private RecipeAdapter mAdapter;
     private List<Recipe> mRecipes;
+
+    @Nullable
+    private SimpleIdlingResource simpleIdlingResource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,5 +121,13 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Han
         Intent intent = new Intent(MainActivity.this,RecipeActivity.class);
         intent.putExtra(RecipeFragment.EXTRA_RECIPE,recipe);
         startActivity(intent);
+    }
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (simpleIdlingResource == null) {
+            simpleIdlingResource = new SimpleIdlingResource();
+        }
+        return simpleIdlingResource;
     }
 }
