@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder> {
     private Context mContext;
     private List<Step> mSteps;
@@ -29,7 +32,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder
     @NonNull
     @Override
     public StepViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View root = LayoutInflater.from(mContext).inflate(R.layout.list_item, parent, false);
+        View root = LayoutInflater.from(mContext).inflate(R.layout.list_item_steps, parent, false);
         return new StepViewHolder(root);
     }
 
@@ -52,11 +55,11 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder
     }
 
     class StepViewHolder extends RecyclerView.ViewHolder{
-        TextView mStepDescription;
+        @BindView(R.id.tv_step_title)TextView mStepDescription;
 
         public StepViewHolder(View itemView) {
             super(itemView);
-            mStepDescription = itemView.findViewById(R.id.tv_recipe_title);
+            ButterKnife.bind(this,itemView);
         }
     }
 }

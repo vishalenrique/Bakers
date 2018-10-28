@@ -8,4 +8,8 @@
     <string name="add_widget">Add widget</string>
     <string name="last_item">Last item reached</string>
     <string name="first_item">First item reached</string>
+    <string name="network_unavailable">Network unavailable</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="steps">Steps</string>
+    <string name="response_failure">Response Failure</string>
 </resources>

@@ -13,6 +13,9 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static com.example.bhati.bakers.StepFragment.EXTRA_POSITION;
 import static com.example.bhati.bakers.StepFragment.EXTRA_RECIPE;
 
@@ -23,13 +26,14 @@ public class RecipeActivity extends AppCompatActivity implements RecipeFragment.
     private static final String TAG = "RecipeActivity";
     private Recipe mRecipe;
     private int mPosition;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
 
         if (savedInstanceState != null) {
             mRecipe = savedInstanceState.getParcelable(EXTRA_RECIPE);

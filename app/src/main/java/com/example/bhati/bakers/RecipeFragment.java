@@ -13,17 +13,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class RecipeFragment extends Fragment implements StepAdapter.HandleClick{
 
     public static final String EXTRA_RECIPE = "recipeFromMain";
     private Recipe mRecipe;
-    private RecyclerView mRecyclerView;
+    @BindView(R.id.rv_recipe) RecyclerView mRecyclerView;
     private StepAdapter mAdapter;
-    private RecyclerView mIngredientsRecyclerView;
-    private IngredientAdapter mIngredientAdapter;
+    @BindView(R.id.tv_ingredients) TextView mIngredientsTextView;
     private List<Step> mSteps;
     private List<Ingredient> mIngredients;
 
@@ -45,14 +48,31 @@ public class RecipeFragment extends Fragment implements StepAdapter.HandleClick{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_recipe, container, false);
+        ButterKnife.bind(this,rootView);
 
         setup();
 
         mSteps = mRecipe.getSteps();
         mIngredients = mRecipe.getIngredients();
 
+        StringBuilder builder = new StringBuilder();
+        for (Ingredient ingredient :mIngredients) {
+            builder.append("\u2022 ")
+                    .append(ingredient.getIngredient())
+                    .append(", ")
+                    .append(ingredient.getQuantity())
+                    .append(" ")
+                    .append(ingredient.getMeasure());
 
-        mRecyclerView = rootView.findViewById(R.id.rv_recipe);
+            if(ingredient.getQuantity()>1){
+                builder.append("S");
+            }
+
+            builder.append("\n");
+        }
+
+        mIngredientsTextView.setText(builder.toString());
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         mAdapter = new StepAdapter(getActivity(),mSteps,this);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -60,12 +80,6 @@ public class RecipeFragment extends Fragment implements StepAdapter.HandleClick{
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(),layoutManager.getOrientation());
         mRecyclerView.addItemDecoration(dividerItemDecoration);
-
-        mIngredientsRecyclerView = rootView.findViewById(R.id.rv_recipe_ingredients);
-        LinearLayoutManager layoutManager1 = new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false);
-        mIngredientAdapter = new IngredientAdapter(getActivity(), mIngredients);
-        mIngredientsRecyclerView.setLayoutManager(layoutManager1);
-        mIngredientsRecyclerView.setAdapter(mIngredientAdapter);
 
         return rootView;
     }

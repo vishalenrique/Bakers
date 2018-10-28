@@ -6,7 +6,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -18,11 +20,16 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Implementation of App Widget functionality.
  */
 public class BakersWidget extends AppWidgetProvider {
 
+    public static final String PREF_DATA = "pref_data";
     private static List<Recipe> mRecipes;
     private static RemoteViews sViews;
     private static int sSize;
@@ -35,7 +42,7 @@ public class BakersWidget extends AppWidgetProvider {
         sViews = new RemoteViews(context.getPackageName(), R.layout.bakers_widget);
 
 
-        getData(context);
+        deserialize(context);
 
 
         Intent intent = new Intent(context, RecipeActivity.class);
@@ -73,10 +80,12 @@ public class BakersWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, sViews);
     }
 
-    private static void getData(Context context) {
-        deserialize(context);
-
+    private static void deserialize(final Context context) {
+        Type recipeListType = new TypeToken<List<Recipe>>() {
+        }.getType();
         SharedPreferences sharedPreferences = context.getSharedPreferences(BakingWidgetService.PREF_BAKING, Context.MODE_PRIVATE);
+        mRecipes = new Gson().fromJson(sharedPreferences.getString(PREF_DATA,""),recipeListType);
+
         sCurrentIndex = sharedPreferences.getInt(BakingWidgetService.PREF_CURRENT_INDEX, 0);
 
         sSize = mRecipes.size();
@@ -84,12 +93,7 @@ public class BakersWidget extends AppWidgetProvider {
 
 
         showContent(sCurrentIndex);
-    }
 
-    private static void deserialize(Context context) {
-        Type recipeListType = new TypeToken<List<Recipe>>() {
-        }.getType();
-        mRecipes = new Gson().fromJson(loadJSONFromAsset(context), recipeListType);
     }
 
     private static void showContent(int index) {
@@ -110,22 +114,6 @@ public class BakersWidget extends AppWidgetProvider {
         }
         sViews.setTextViewText(R.id.appwidget_recipe_name, mRecipes.get(index).getName());
         sViews.setTextViewText(R.id.appwidget_text, builder.toString());
-    }
-
-    public static String loadJSONFromAsset(Context context) {
-        StringBuilder responseStrBuilder;
-        try {
-            InputStream is = context.getAssets().open("recipes.json");
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            responseStrBuilder = new StringBuilder();
-            String inputStr;
-            while ((inputStr = streamReader.readLine()) != null)
-                responseStrBuilder.append(inputStr);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return responseStrBuilder.toString();
     }
 
     @Override

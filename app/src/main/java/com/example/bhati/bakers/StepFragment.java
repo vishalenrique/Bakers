@@ -3,6 +3,8 @@ package com.example.bhati.bakers;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,12 +13,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -28,6 +32,9 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class StepFragment extends Fragment {
 
@@ -35,20 +42,23 @@ public class StepFragment extends Fragment {
     public static final String EXTRA_POSITION = "extraPosition";
     private Recipe mRecipe;
     private List<Step> mSteps;
-    private TextView mStepHeading;
-    private TextView mStepDescription;
+    @BindView(R.id.tv_step_heading) TextView mStepHeading;
+    @BindView(R.id.tv_step_description) TextView mStepDescription;
     private int mPosition = 0;
     private int mSize;
 
 
-    PlayerView mPlayerView;
+    @BindView(R.id.exo_player_view) PlayerView mPlayerView;
     SimpleExoPlayer mPlayer;
     private Step mStep;
     private String mVideoURL;
     private DefaultDataSourceFactory mDataSourceFactory;
-    private ImageView mLeftArrowIV;
-    private ImageView mRightArrowIV;
+    @BindView(R.id.left_arrow) ImageView mLeftArrowIV;
+    @BindView(R.id.right_arrow) ImageView mRightArrowIV;
     private View mRootView;
+    private boolean mIsConnected;
+    private Snackbar mSnackbar;
+    private static final String TAG = "StepFragment";
 
 
     public StepFragment() {
@@ -71,12 +81,13 @@ public class StepFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_step, container, false);
+        ButterKnife.bind(this,mRootView);
 
-        if(savedInstanceState!=null){
-//            mRecipe = savedInstanceState.getParcelable(EXTRA_RECIPE);
-//            mPosition = savedInstanceState.getInt(EXTRA_POSITION,0);
-        }else {
+        mIsConnected = isNetworkAvailable();
+        if(!mIsConnected)
+        Toast.makeText(getActivity(), getActivity().getString(R.string.network_unavailable), Toast.LENGTH_SHORT).show();
 
+        if(savedInstanceState==null){
             Intent intent = getActivity().getIntent();
             mRecipe = intent.getParcelableExtra(EXTRA_RECIPE);
             mPosition = intent.getIntExtra(EXTRA_POSITION, 0);
@@ -94,43 +105,56 @@ public class StepFragment extends Fragment {
         return mRootView;
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null &&
+                activeNetworkInfo.isConnectedOrConnecting();
+    }
+
     public void initialSetup(Recipe recipe, int position) {
         if (mRecipe == null) {
             mRecipe = recipe;
             mPosition = position;
         }
-        mPlayerView = mRootView.findViewById(R.id.exo_player_view);
 
         mSteps = mRecipe.getSteps();
         mSize = mSteps.size();
-        mLeftArrowIV = mRootView.findViewById(R.id.left_arrow);
-        mRightArrowIV = mRootView.findViewById(R.id.right_arrow);
-        mStepHeading = mRootView.findViewById(R.id.tv_step_heading);
-        mStepDescription = mRootView.findViewById(R.id.tv_step_description);
 
         mLeftArrowIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPosition == 0)
+                if (mPosition == 0) {
+                    Snackbar.make(mStepHeading,getActivity().getString(R.string.first_item), Snackbar.LENGTH_SHORT).show();
                     return;
-
-                mPlayer.stop();
+                }
+                if(mSnackbar.isShown())
+                mSnackbar.dismiss();
                 --mPosition;
                 displayCurrentStep();
-                setupMediaSource();
+                if(mIsConnected) {
+                    mPlayer.stop();
+                    setupMediaSource();
+                }
             }
         });
 
         mRightArrowIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPosition == (mSize - 1))
+                if (mPosition == (mSize - 1)) {
+                    Snackbar.make(mStepHeading,getActivity().getString(R.string.last_item), Snackbar.LENGTH_SHORT).show();
                     return;
-
-                mPlayer.stop();
+                }
+                if(mSnackbar.isShown())
+                mSnackbar.dismiss();
                 ++mPosition;
                 displayCurrentStep();
-                setupMediaSource();
+                if(mIsConnected) {
+                    mPlayer.stop();
+                    setupMediaSource();
+                }
             }
         });
 
@@ -149,8 +173,8 @@ public class StepFragment extends Fragment {
                     getActivity().getWindow()
                             .getDecorView()
                             .setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                    | View.SYSTEM_UI_FLAG_IMMERSIVE);
+                                    | View.SYSTEM_UI_FLAG_FULLSCREEN |
+                                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mPlayerView.getLayoutParams();
                     params.width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -163,8 +187,7 @@ public class StepFragment extends Fragment {
 
                 getActivity().getWindow()
                         .getDecorView()
-                        .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                        .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mPlayerView.getLayoutParams();
                 params.width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -194,6 +217,8 @@ public class StepFragment extends Fragment {
     public void onStart() {
         super.onStart();
         if (mRecipe != null) {
+            mSnackbar = Snackbar.make(mStepHeading, "Video unavailable for this step", Snackbar.LENGTH_INDEFINITE);
+            if(mIsConnected)
             setupPlayer();
         }
     }
@@ -208,8 +233,8 @@ public class StepFragment extends Fragment {
 
     private void setupMediaSource() {
         if (TextUtils.isEmpty(mVideoURL)) {
-            Snackbar.make(mStepHeading, "Video unavailable for this step", Snackbar.LENGTH_SHORT).show();
-            mPlayerView.setVisibility(View.GONE);
+            mSnackbar.show();
+            mPlayer.stop(true);
             return;
         }
 
@@ -223,11 +248,13 @@ public class StepFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (mRecipe != null) {
+        if (mRecipe != null && mIsConnected) {
             mPlayerView.setPlayer(null);
             mPlayer.release();
             mPlayer = null;
         }
+        if(mSnackbar.isShown())
+            mSnackbar.dismiss();
     }
 
 

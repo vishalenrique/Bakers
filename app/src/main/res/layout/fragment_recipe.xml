@@ -6,22 +6,29 @@
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:paddingTop="16dp"
-            android:text="Ingredients" />
+            android:text="@string/ingredients"
+            android:paddingTop="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_recipe_ingredients"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_ingredients"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp" />
+            android:paddingTop="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textSize="16sp"
+            android:text="@string/ingredients" />
 
         <View
             android:layout_width="match_parent"
@@ -33,7 +40,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:padding="8dp"
-            android:text="Steps" />
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="@string/steps" />
 
         <View
             android:layout_width="match_parent"
